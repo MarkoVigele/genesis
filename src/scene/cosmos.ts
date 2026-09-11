@@ -315,7 +315,7 @@ export class Cosmos {
 
   setProgress(cursor: StageCursor, dt: number): void {
     this.elapsed += dt;
-    const { index, next, local, floatStage } = cursor;
+    const { index, next, local, blend, floatStage } = cursor;
     const from = this.sparkLayouts[index];
     const to = this.sparkLayouts[next];
     const cloudFrom = this.cloudLayouts[index];
@@ -331,7 +331,7 @@ export class Cosmos {
       gate(floatStage, 6, 0.8) * 0.35;
 
     for (let i = 0; i < this.quality.sparks; i += 1) {
-      lerpLayouts(from, to, local, i, this.tmp);
+      lerpLayouts(from, to, blend, i, this.tmp);
       if (quarkAmp > 0.01) {
         const t = this.elapsed;
         this.tmp.x += Math.sin(t * 1.7 + this.tmp.y * 0.45 + i * 0.01) * quarkAmp;
@@ -344,7 +344,7 @@ export class Cosmos {
 
       pickColor(index, i, this.tmpColor);
       pickColor(next, i, this.tmpColorB);
-      this.tmpColor.lerp(this.tmpColorB, local);
+      this.tmpColor.lerp(this.tmpColorB, blend);
       this.sparkColor[i * 3] = this.tmpColor.r;
       this.sparkColor[i * 3 + 1] = this.tmpColor.g;
       this.sparkColor[i * 3 + 2] = this.tmpColor.b;
@@ -359,13 +359,13 @@ export class Cosmos {
     }
 
     for (let i = 0; i < this.quality.clouds; i += 1) {
-      lerpLayouts(cloudFrom, cloudTo, local, i, this.tmp);
+      lerpLayouts(cloudFrom, cloudTo, blend, i, this.tmp);
       this.cloudPos[i * 3] = this.tmp.x * 1.05;
       this.cloudPos[i * 3 + 1] = this.tmp.y * 0.85;
       this.cloudPos[i * 3 + 2] = this.tmp.z * 1.05;
       pickColor(index, i + 3, this.tmpColor);
       pickColor(next, i + 3, this.tmpColorB);
-      this.tmpColor.lerp(this.tmpColorB, local);
+      this.tmpColor.lerp(this.tmpColorB, blend);
       this.cloudColor[i * 3] = this.tmpColor.r;
       this.cloudColor[i * 3 + 1] = this.tmpColor.g;
       this.cloudColor[i * 3 + 2] = this.tmpColor.b;
@@ -405,8 +405,9 @@ export class Cosmos {
     this.sunGlow.visible = this.sun.visible;
     const sunMat = this.sun.material as THREE.MeshBasicMaterial;
     sunMat.opacity = 1;
-    this.sun.scale.setScalar(index >= 7 ? 0.72 : 1);
-    this.sunGlow.scale.setScalar((index >= 7 ? 5.2 : 7.4) * (0.85 + sunAlpha * 0.2));
+    const sunShrink = index >= 7 ? 1 : index === 6 ? blend : 0;
+    this.sun.scale.setScalar(1 - sunShrink * 0.28);
+    this.sunGlow.scale.setScalar((7.4 - sunShrink * 2.2) * (0.85 + sunAlpha * 0.2));
     const glowMat = this.sunGlow.material;
     glowMat.opacity = 0.55 + sunAlpha * 0.35;
 
@@ -417,7 +418,8 @@ export class Cosmos {
       const mesh = this.planetMeshes[p];
       if (!spec || !mesh) continue;
       const angle = this.elapsed * spec.speed + p * 0.7;
-      const formed = Math.min(1, Math.max(0, (cursor.local + (index === 7 ? 0 : -1) + p * 0.08) * 1.1));
+      const morph = index === 7 ? local : blend;
+      const formed = Math.min(1, Math.max(0, (morph + (index === 7 ? 0 : -1) + p * 0.08) * 1.1));
       const orbit = spec.orbit * (1.15 - formed * 0.15);
       mesh.position.set(Math.cos(angle) * orbit, Math.sin(angle * 0.3) * spec.tilt, Math.sin(angle) * orbit);
       mesh.scale.setScalar(0.35 + formed * 0.65);
@@ -426,7 +428,7 @@ export class Cosmos {
       mat.transparent = true;
     }
 
-    this.sparkPoints.rotation.y = floatStage >= 5 && floatStage < 6.35 ? this.elapsed * 0.045 : this.elapsed * 0.01;
+    this.sparkPoints.rotation.y = floatStage >= 5 && floatStage < 6 ? this.elapsed * 0.045 : this.elapsed * 0.01;
     this.cloudPoints.rotation.y = this.elapsed * 0.018;
     this.starfield.rotation.y = this.elapsed * 0.004;
     const starMat = this.starfield.material;
@@ -437,8 +439,8 @@ export class Cosmos {
     const camA = CAM[index] ?? CAM[0];
     const camB = CAM[next] ?? camA;
     if (camA && camB) {
-      this.camPos.lerpVectors(camA.pos, camB.pos, local);
-      this.camLook.lerpVectors(camA.look, camB.look, local);
+      this.camPos.lerpVectors(camA.pos, camB.pos, blend);
+      this.camLook.lerpVectors(camA.look, camB.look, blend);
     }
     const orbit = this.elapsed * 0.08;
     const orbitAmt = 0.35 + gate(floatStage, 5, 1) * 0.4;
@@ -452,7 +454,7 @@ export class Cosmos {
     const bgA = BG[index] ?? BG[0];
     const bgB = BG[next] ?? bgA;
     if (bgA && bgB) {
-      this.bg.copy(bgA).lerp(bgB, local);
+      this.bg.copy(bgA).lerp(bgB, blend);
       this.scene.background = this.bg;
       const fog = this.scene.fog;
       if (fog instanceof THREE.FogExp2) {

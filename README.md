@@ -19,7 +19,7 @@ Die Reihenfolge ist fest. Die Milchstraße steht vor der Sonne — unser Sonnens
 7. **Sonne**
 8. **Planeten** — Scheibe wird Welt
 
-Play/Pause, Zeitlinie ziehen, oder eine Station antippen. Leertaste und Pfeile gehen am Rechner.
+Play/Pause, Zeitlinie ziehen, oder eine Station antippen. Leertaste und Pfeile gehen am Rechner. Autoplay bleibt bei jeder Station länger stehen und wechselt dann langsam zur nächsten — bewusst ruhig, zum Lesen und Zuschauen.
 
 ## Lokal
 
