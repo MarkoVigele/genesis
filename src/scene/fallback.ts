@@ -79,10 +79,10 @@ export class FallbackSky {
     ctx.translate(w * 0.5, h * 0.48);
     ctx.globalCompositeOperation = "lighter";
     const scale = Math.min(w, h) * 0.28;
-    const { index, next, local } = cursor;
-    this.drawStage(index, 1 - local * (index === next ? 0 : 1), scale, elapsed);
+    const { index, next, blend } = cursor;
+    this.drawStage(index, 1 - blend * (index === next ? 0 : 1), scale, elapsed);
     if (next !== index) {
-      this.drawStage(next, local, scale, elapsed);
+      this.drawStage(next, blend, scale, elapsed);
     }
     ctx.restore();
 
