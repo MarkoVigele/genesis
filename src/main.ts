@@ -1,6 +1,6 @@
 import "./styles.css";
 import { detectQuality } from "./quality";
-import { Cosmos } from "./scene/cosmos";
+import { createVisuals, type VisualEngine } from "./scene/engine";
 import { STAGES } from "./stages";
 import { Timeline, stageFromProgress } from "./timeline";
 import { mountUi, renderUi } from "./ui";
@@ -12,7 +12,7 @@ if (!(host instanceof HTMLElement)) {
 
 const ui = mountUi(host);
 const timeline = new Timeline();
-const cosmos = new Cosmos(ui.canvas, detectQuality());
+const quality = detectQuality();
 
 let lastUiIndex = -1;
 let lastPlaying = timeline.playing;
@@ -59,8 +59,18 @@ window.addEventListener("keydown", (event) => {
   }
 });
 
-window.addEventListener("resize", () => cosmos.resize());
-window.visualViewport?.addEventListener("resize", () => cosmos.resize());
+paintUi();
+
+let visuals: VisualEngine | null = null;
+try {
+  visuals = createVisuals(ui.canvas, quality);
+  visuals.resize();
+} catch {
+  visuals = null;
+}
+
+window.addEventListener("resize", () => visuals?.resize());
+window.visualViewport?.addEventListener("resize", () => visuals?.resize());
 
 let last = performance.now();
 const loop = (now: number): void => {
@@ -68,8 +78,8 @@ const loop = (now: number): void => {
   last = now;
   timeline.update(dt);
   const cursor = stageFromProgress(timeline.progress);
-  cosmos.setProgress(cursor, dt);
-  cosmos.render();
+  visuals?.setProgress(cursor, dt);
+  visuals?.render();
   if (cursor.index !== lastUiIndex || timeline.playing !== lastPlaying || timeline.finished !== lastFinished) {
     paintUi();
   } else if (timeline.playing) {
@@ -78,5 +88,4 @@ const loop = (now: number): void => {
   requestAnimationFrame(loop);
 };
 
-paintUi();
 requestAnimationFrame(loop);

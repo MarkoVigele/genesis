@@ -183,7 +183,8 @@ export class Cosmos {
       canvas,
       antialias: !quality.mobile,
       alpha: false,
-      powerPreference: "high-performance",
+      powerPreference: quality.mobile ? "default" : "high-performance",
+      failIfMajorPerformanceCaveat: false,
     });
     this.renderer.setPixelRatio(quality.pixelRatio);
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
