@@ -11,6 +11,17 @@ export type UiHandles = {
   ticks: HTMLButtonElement[];
 };
 
+export function playLabel(playing: boolean, finished: boolean): string {
+  if (finished) return "Von vorn";
+  return playing ? "Pause" : "Abspielen";
+}
+
+export function setScrubProgress(ui: UiHandles, progress: number): void {
+  const clamped = Math.min(1, Math.max(0, progress));
+  ui.scrub.value = String(Math.round(clamped * 1000));
+  ui.scrub.style.setProperty("--progress", `${(clamped * 100).toFixed(2)}%`);
+}
+
 export function mountUi(host: HTMLElement): UiHandles {
   host.innerHTML = `
     <canvas id="stage" aria-hidden="true"></canvas>
@@ -21,21 +32,23 @@ export function mountUi(host: HTMLElement): UiHandles {
         <h1 id="stage-name">Quarks</h1>
         <p id="stage-era" class="era">Heißes Plasma</p>
       </div>
-      <button id="play" type="button" aria-label="Pause">Pause</button>
+      <button id="play" class="play" type="button" aria-label="Pause">Pause</button>
     </header>
     <footer class="hud-bottom">
-      <p id="caption" class="caption"></p>
       <div class="transport">
-        <input
-          id="scrub"
-          type="range"
-          min="0"
-          max="1000"
-          value="0"
-          step="1"
-          aria-label="Zeitlinie"
-        />
-        <div class="ticks" role="tablist" aria-label="Stationen"></div>
+        <p id="caption" class="caption"></p>
+        <div class="transport-controls">
+          <input
+            id="scrub"
+            type="range"
+            min="0"
+            max="1000"
+            value="0"
+            step="1"
+            aria-label="Zeitlinie"
+          />
+          <div class="ticks" role="tablist" aria-label="Stationen"></div>
+        </div>
       </div>
     </footer>
   `;
@@ -66,7 +79,7 @@ export function mountUi(host: HTMLElement): UiHandles {
     button.className = "tick";
     button.dataset.stage = stage.id;
     button.setAttribute("role", "tab");
-    button.innerHTML = `<span class="dot"></span><span class="tick-label">${stage.label}</span>`;
+    button.innerHTML = `<span class="tick-label">${stage.label}</span>`;
     tickHost.append(button);
     ticks.push(button);
   }
@@ -84,12 +97,17 @@ export function renderUi(
   ui.name.textContent = stage.label;
   ui.era.textContent = stage.era;
   ui.caption.textContent = stage.caption;
-  ui.scrub.value = String(Math.round(progress * 1000));
-  ui.play.textContent = finished ? "Von vorn" : playing ? "Pause" : "Abspielen";
-  ui.play.setAttribute("aria-label", ui.play.textContent);
-  ui.play.classList.toggle("is-playing", playing);
+  setScrubProgress(ui, progress);
+  const label = playLabel(playing, finished);
+  ui.play.textContent = label;
+  ui.play.setAttribute("aria-label", label);
+  ui.play.classList.toggle("is-playing", playing && !finished);
+  ui.play.classList.toggle("is-paused", !playing && !finished);
+  ui.play.classList.toggle("is-finished", finished);
   for (const tick of ui.ticks) {
-    tick.classList.toggle("is-active", tick.dataset.stage === stage.id);
-    tick.setAttribute("aria-selected", tick.dataset.stage === stage.id ? "true" : "false");
+    const active = tick.dataset.stage === stage.id;
+    tick.classList.toggle("is-active", active);
+    tick.setAttribute("aria-selected", active ? "true" : "false");
+    tick.tabIndex = active ? 0 : -1;
   }
 }

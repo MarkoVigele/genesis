@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "test": "tsx --test src/timeline.test.ts src/scene/layout.test.ts",
+    "test": "tsx --test src/timeline.test.ts src/scene/layout.test.ts src/ui.test.ts",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --host"
   },

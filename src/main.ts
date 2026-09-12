@@ -3,7 +3,7 @@ import { detectQuality } from "./quality";
 import { createVisuals, type VisualEngine } from "./scene/engine";
 import { STAGES } from "./stages";
 import { Timeline, stageFromProgress } from "./timeline";
-import { mountUi, renderUi } from "./ui";
+import { mountUi, renderUi, setScrubProgress } from "./ui";
 
 const host = document.querySelector("#app");
 if (!(host instanceof HTMLElement)) {
@@ -83,7 +83,7 @@ const loop = (now: number): void => {
   if (cursor.index !== lastUiIndex || timeline.playing !== lastPlaying || timeline.finished !== lastFinished) {
     paintUi();
   } else if (timeline.playing) {
-    ui.scrub.value = String(Math.round(timeline.progress * 1000));
+    setScrubProgress(ui, timeline.progress);
   }
   requestAnimationFrame(loop);
 };
