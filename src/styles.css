@@ -98,24 +98,21 @@ body {
 }
 
 .brand,
-.transport,
-.play {
+.transport {
   border: 1px solid var(--line);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), transparent 46%),
+    var(--glass);
   backdrop-filter: blur(var(--blur));
   -webkit-backdrop-filter: blur(var(--blur));
-}
-
-.brand,
-.transport {
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.045), transparent 42%),
-    var(--glass);
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.18);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 10px 28px rgba(0, 0, 0, 0.18);
 }
 
 .brand {
   min-width: 0;
-  max-width: min(26rem, calc(100% - 132px));
+  max-width: min(26rem, calc(100% - 148px));
   padding: 10px 14px 11px;
   border-radius: var(--radius);
 }
@@ -130,8 +127,8 @@ body {
 }
 
 .brand h1 {
-  margin: 3px 0 0;
-  font-size: clamp(1.25rem, 3.4vw, 1.75rem);
+  margin: 4px 0 0;
+  font-size: clamp(1.35rem, 3.8vw, 1.9rem);
   font-weight: 620;
   letter-spacing: -0.03em;
   line-height: 1.12;
@@ -156,9 +153,10 @@ body {
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-width: 124px;
+  min-width: 136px;
   min-height: 44px;
-  padding: 0 16px;
+  padding: 0 18px;
+  border: 1px solid transparent;
   border-radius: 999px;
   background: var(--gold);
   color: var(--ink);
@@ -169,6 +167,7 @@ body {
   cursor: pointer;
   touch-action: manipulation;
   user-select: none;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
   transition:
     background 0.16s ease,
     color 0.16s ease,
@@ -186,9 +185,9 @@ body {
 }
 
 .play.is-playing {
-  background: var(--glass-strong);
+  background: #1c1913;
   color: var(--text);
-  border-color: rgba(226, 192, 122, 0.42);
+  border-color: rgba(226, 192, 122, 0.55);
 }
 
 .play.is-playing::before {
@@ -217,9 +216,9 @@ body {
 }
 
 .play.is-playing:hover {
-  background: rgba(226, 192, 122, 0.16);
+  background: #262217;
   color: var(--text);
-  border-color: rgba(226, 192, 122, 0.55);
+  border-color: rgba(226, 192, 122, 0.7);
 }
 
 .play:focus-visible,
@@ -239,10 +238,12 @@ body {
 
 .caption {
   margin: 0;
+  padding-bottom: 10px;
   max-width: 46rem;
+  border-bottom: 1px solid var(--line);
   font-size: 13.5px;
   line-height: 1.45;
-  color: #ddd7cc;
+  color: #e8e2d6;
 }
 
 .transport-controls {
@@ -276,13 +277,13 @@ body {
 #scrub::-webkit-slider-thumb {
   appearance: none;
   -webkit-appearance: none;
-  width: 18px;
-  height: 18px;
-  margin-top: -7.5px;
+  width: 20px;
+  height: 20px;
+  margin-top: -8.5px;
   border-radius: 50%;
   border: 2px solid #1c170f;
   background: var(--gold);
-  box-shadow: 0 0 0 1px rgba(226, 192, 122, 0.25);
+  box-shadow: 0 0 0 1px rgba(226, 192, 122, 0.28);
 }
 
 #scrub::-moz-range-track {
@@ -298,12 +299,12 @@ body {
 }
 
 #scrub::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
   border: 2px solid #1c170f;
   background: var(--gold);
-  box-shadow: 0 0 0 1px rgba(226, 192, 122, 0.25);
+  box-shadow: 0 0 0 1px rgba(226, 192, 122, 0.28);
 }
 
 #scrub::-moz-range-progress {
@@ -315,10 +316,12 @@ body {
 .ticks {
   display: grid;
   grid-template-columns: repeat(8, minmax(0, 1fr));
-  gap: 3px;
+  gap: 2px;
   padding: 3px;
+  border: 1px solid rgba(243, 239, 230, 0.08);
   border-radius: 12px;
   background: var(--well);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 .tick {
@@ -371,12 +374,12 @@ body {
 
 @media (max-width: 720px) {
   .brand {
-    max-width: calc(100% - 120px);
+    max-width: calc(100% - 128px);
     padding: 9px 12px 10px;
   }
 
   .brand h1 {
-    font-size: 1.25rem;
+    font-size: 1.3rem;
   }
 
   .caption {
@@ -389,11 +392,12 @@ body {
 
   .tick {
     min-height: 44px;
+    padding: 6px 3px;
     font-size: 11px;
   }
 
   .play {
-    min-width: 112px;
+    min-width: 122px;
     font-size: 13.5px;
   }
 }
@@ -416,14 +420,16 @@ body {
     gap: 0;
     padding: 8px 10px 8px;
   }
+}
 
+@media (max-height: 460px) and (min-width: 721px) {
   .ticks {
     grid-template-columns: repeat(8, minmax(0, 1fr));
   }
 
   .tick {
     min-height: 36px;
-    font-size: 10px;
+    font-size: 10.5px;
   }
 }
 
