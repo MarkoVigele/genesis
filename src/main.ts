@@ -44,6 +44,9 @@ ui.ticks.forEach((tick, index) => {
 });
 
 window.addEventListener("keydown", (event) => {
+  if (event.target instanceof HTMLAnchorElement) {
+    return;
+  }
   if (event.code === "Space") {
     event.preventDefault();
     timeline.toggle();

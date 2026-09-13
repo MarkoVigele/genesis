@@ -1,5 +1,15 @@
 import { STAGES, type Stage } from "./stages";
 
+export const DONATE_HREF =
+  "https://donate.stripe.com/eVqfZif6m8veaTEftLeEo00?client_reference_id=genesis";
+export const DONATE_LABEL = "Projekt unterstützen";
+export const DONATE_HINT =
+  "Demos bleiben free. Wenn du willst, kannst du das Studio kurz unterstützen.";
+
+export function donateMarkup(): string {
+  return `<a class="donate" id="donate" href="${DONATE_HREF}" target="_blank" rel="noopener"><span class="donate-label">${DONATE_LABEL}</span><span class="donate-hint">${DONATE_HINT}</span></a>`;
+}
+
 export type UiHandles = {
   root: HTMLElement;
   canvas: HTMLCanvasElement;
@@ -8,6 +18,7 @@ export type UiHandles = {
   name: HTMLElement;
   era: HTMLElement;
   caption: HTMLElement;
+  donate: HTMLAnchorElement;
   ticks: HTMLButtonElement[];
 };
 
@@ -50,6 +61,7 @@ export function mountUi(host: HTMLElement): UiHandles {
           <div class="ticks" role="tablist" aria-label="Stationen"></div>
         </div>
       </div>
+      ${donateMarkup()}
     </footer>
   `;
 
@@ -59,6 +71,7 @@ export function mountUi(host: HTMLElement): UiHandles {
   const name = host.querySelector("#stage-name");
   const era = host.querySelector("#stage-era");
   const caption = host.querySelector("#caption");
+  const donate = host.querySelector("#donate");
   const tickHost = host.querySelector(".ticks");
   if (
     !(canvas instanceof HTMLCanvasElement) ||
@@ -67,6 +80,7 @@ export function mountUi(host: HTMLElement): UiHandles {
     !(name instanceof HTMLElement) ||
     !(era instanceof HTMLElement) ||
     !(caption instanceof HTMLElement) ||
+    !(donate instanceof HTMLAnchorElement) ||
     !(tickHost instanceof HTMLElement)
   ) {
     throw new Error("ui mount failed");
@@ -84,7 +98,7 @@ export function mountUi(host: HTMLElement): UiHandles {
     ticks.push(button);
   }
 
-  return { root: host, canvas, play, scrub, name, era, caption, ticks };
+  return { root: host, canvas, play, scrub, name, era, caption, donate, ticks };
 }
 
 export function renderUi(
